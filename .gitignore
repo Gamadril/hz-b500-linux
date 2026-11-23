@@ -52,3 +52,6 @@
 /core.[0-9]*
 # Rust build output of tools/hz-pack when built by hand (scripts/hz-pack uses out/).
 /tools/hz-pack/target/
+# Python bytecode (build artifact)
+__pycache__/
+*.pyc

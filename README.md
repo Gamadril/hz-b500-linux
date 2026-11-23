@@ -8,6 +8,12 @@ internal flash, so removing the card returns to the original system. The
 [Hackaday project](https://hackaday.io/project/205793-reverse-engineering-f133d1s-device)
 has hardware details, firmware analysis and how to enter FEL mode.
 
+![hmi-home.png](pics/hmi-home.png)
+
+![hmi-dashboard.png](pics/hmi-dashboard.png)
+
+![hmi-settings.png](pics/hmi-settings.png)
+
 ## What works
 
 | Feature | Status |
