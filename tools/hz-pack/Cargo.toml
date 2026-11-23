@@ -1,0 +1,13 @@
+[package]
+name = "hz-pack"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.88"
+description = "HZ-B500 SD image packing helpers: TOC1 boot package and Boot0 header"
+license = "GPL-2.0-only"
+publish = false
+
+[dependencies]
+
+[profile.release]
+debug = false

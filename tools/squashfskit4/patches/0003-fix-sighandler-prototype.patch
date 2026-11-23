@@ -1,0 +1,21 @@
+--- a/squashfs-tools/mksquashfs.c
++++ b/squashfs-tools/mksquashfs.c
+@@ -418 +418 @@
+-void sighandler()
++void sighandler(int sig)
+--- a/squashfs-tools/progressbar.c
++++ b/squashfs-tools/progressbar.c
+@@ -55 +55 @@
+-static void sigwinch_handler()
++static void sigwinch_handler(int sig)
+@@ -69 +69 @@
+-static void sigalrm_handler()
++static void sigalrm_handler(int sig)
+--- a/squashfs-tools/unsquashfs.c
++++ b/squashfs-tools/unsquashfs.c
+@@ -139 +139 @@
+-void sigwinch_handler()
++void sigwinch_handler(int sig)
+@@ -153 +153 @@
+-void sigalrm_handler()
++void sigalrm_handler(int sig)

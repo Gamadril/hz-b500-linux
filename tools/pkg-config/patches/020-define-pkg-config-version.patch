@@ -1,0 +1,20 @@
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -17 +17,2 @@ if NATIVE_WIN32
+-	-DPKG_CONFIG_SYSTEM_LIBRARY_PATH="\"$(subst /,\/,$(system_library_path))\""
++	-DPKG_CONFIG_SYSTEM_LIBRARY_PATH="\"$(subst /,\/,$(system_library_path))\"" \
++	-DVERSION="\"$(PACKAGE_VERSION)\""
+@@ -22 +23,2 @@ else
+-	-DPKG_CONFIG_SYSTEM_LIBRARY_PATH="\"$(system_library_path)\""
++	-DPKG_CONFIG_SYSTEM_LIBRARY_PATH="\"$(system_library_path)\"" \
++	-DVERSION="\"$(PACKAGE_VERSION)\""
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -418 +418,2 @@
+-@NATIVE_WIN32_FALSE@	-DPKG_CONFIG_SYSTEM_LIBRARY_PATH="\"$(system_library_path)\""
++@NATIVE_WIN32_FALSE@	-DPKG_CONFIG_SYSTEM_LIBRARY_PATH="\"$(system_library_path)\"" \
++@NATIVE_WIN32_FALSE@	-DVERSION="\"$(PACKAGE_VERSION)\""
+@@ -425 +426,2 @@
+-@NATIVE_WIN32_TRUE@	-DPKG_CONFIG_SYSTEM_LIBRARY_PATH="\"$(subst /,\/,$(system_library_path))\""
++@NATIVE_WIN32_TRUE@	-DPKG_CONFIG_SYSTEM_LIBRARY_PATH="\"$(subst /,\/,$(system_library_path))\"" \
++@NATIVE_WIN32_TRUE@	-DVERSION="\"$(PACKAGE_VERSION)\""

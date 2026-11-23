@@ -1,0 +1,11 @@
+#!/bin/sh
+# Never hold HMI or rcS behind SDIO firmware loading. If HMI is disabled or
+# fails, still attempt Wi-Fi after a bounded wait. /var/run lives in tmpfs.
+remaining=20
+while [ ! -s /var/run/hz-ui.ready ] && [ "$remaining" -gt 0 ]; do
+    sleep 1
+    remaining=$((remaining - 1))
+done
+[ ! -d /sys/module/ssv6x5x ] || exit 0
+printf 'Wi-Fi: starting deferred SSV6x5x probe\n'
+exec /usr/sbin/modprobe ssv6x5x

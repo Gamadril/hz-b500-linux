@@ -1,0 +1,9 @@
+#!/bin/sh
+mkdir -p /var/run
+read uptime rest < /proc/uptime
+printf '[%s] UI exec (before ELF/library initialization)\n' "$uptime" > /var/run/hz-ui.boot
+printf '[%s] UI exec (before ELF/library initialization)\n' "$uptime" > /dev/console
+# Preserve detailed kernel timestamps without serializing the whole ring buffer
+# through 115200-baud UART before the first HMI frame.
+dmesg > /var/run/boot-kernel.log
+exec /usr/bin/hz-ui "$@"

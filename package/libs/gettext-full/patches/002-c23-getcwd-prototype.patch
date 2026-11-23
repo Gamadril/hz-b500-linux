@@ -1,0 +1,22 @@
+--- a/gettext-runtime/intl/dcigettext.c
++++ b/gettext-runtime/intl/dcigettext.c
+@@ -144,7 +144,7 @@
+ #  if VMS
+ #   define getcwd(buf, max) (getcwd) (buf, max, 0)
+ #  else
+-char *getcwd ();
++char *getcwd (char *, size_t);
+ #  endif
+ # endif
+ # ifndef HAVE_STPCPY
+--- a/gettext-tools/src/x-javascript.c
++++ b/gettext-tools/src/x-javascript.c
+@@ -1332,7 +1332,7 @@
+               || last_token_type == token_type_rbracket)
+             tp->type = last_token_type = token_type_operator;
+           else
+             {
+-              phase5_scan_regexp (tp);
++              phase5_scan_regexp ();
+               tp->type = last_token_type = token_type_regexp;
+             }

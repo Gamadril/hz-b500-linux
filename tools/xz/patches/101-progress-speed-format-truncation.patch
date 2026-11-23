@@ -1,0 +1,11 @@
+--- a/src/xz/message.c
++++ b/src/xz/message.c
+@@ -375,7 +375,7 @@ progress_speed(uint64_t uncompressed_pos, uint64_t elapsed)
+ 	//  - 99 KiB/s
+ 	//  - 999 KiB/s
+ 	// Use big enough buffer to hold e.g. a multibyte decimal point.
+-	static char buf[16];
++	static char buf[384];
+ 	snprintf(buf, sizeof(buf), "%.*f %s",
+ 			speed > 9.9 ? 0 : 1, speed, unit[unit_index]);
+ 	return buf;

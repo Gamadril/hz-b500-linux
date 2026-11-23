@@ -1,0 +1,21 @@
+#!/bin/sh
+# SD ext4 is the writable root itself; do not overlay it with a flash volume.
+do_mount_root() {
+	if awk '$2 == "/" && $3 == "ext4" { found=1 } END { exit !found }' /proc/mounts; then
+		mount -o remount,rw,noatime /
+	else
+		mount_root
+	fi
+
+	boot_run_hook preinit_mount_root
+	[ -f /sysupgrade.tgz ] && {
+		echo "- config restore -"
+		cd /
+		mv sysupgrade.tgz /tmp
+		tar xzf /tmp/sysupgrade.tgz
+		rm -f /tmp/sysupgrade.tgz
+		sync
+	}
+}
+
+[ "$INITRAMFS" = "1" ] || boot_hook_add preinit_main do_mount_root

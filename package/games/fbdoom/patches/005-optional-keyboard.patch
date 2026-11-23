@@ -1,0 +1,57 @@
+--- a/i_input_tty.c
++++ b/i_input_tty.c
+@@ -311,7 +311,10 @@
+     exit(0);
+ }
+ 
+-static int kbd_init(void)
++/* Opens keyboards (and the touch-exit device once). Run at start and, while no
++   keyboard is attached, once per second: DOOM starts and keeps running without
++   one (the touch corner quits), and a keyboard plugged in later is used. */
++static void kbd_scan(void)
+ {
+     unsigned long keys[KEY_MAX / (8 * sizeof(long)) + 1];
+     const unsigned bits = 8 * sizeof(long);
+@@ -341,8 +344,13 @@
+             close(fd);
+         }
+     }
++}
++
++static int kbd_init(void)
++{
++    kbd_scan();
+     if (!kbd_count)
+-        I_Error("No USB keyboard found in /dev/input");
++        printf("No keyboard yet; plug one in, or hold the top-left corner to quit.\n");
+     return 0;
+ }
+ 
+@@ -360,10 +368,11 @@
+             *key = ev.code;
+             return 1;
+         }
+-        /* An unplugged keyboard leaves no way to play or quit. */
++        /* Unplugged: forget it and keep running; kbd_scan finds a new one. */
+         if (n < 0 && errno == ENODEV) {
+             printf("Keyboard removed.\n");
+-            I_Quit();
++            close(kbd[i]);
++            kbd[i--] = kbd[--kbd_count];
+         }
+     }
+     return 0;
+@@ -424,8 +433,13 @@
+     event_t event;
+     int pressed;
+     unsigned char key;
++    static int last_scan;
+ 
+     touch_poll();
++    if (!kbd_count && I_GetTimeMS() - last_scan >= 1000) {
++        last_scan = I_GetTimeMS();
++        kbd_scan();
++    }
+ 
+     // put event-grabbing stuff in here
+     

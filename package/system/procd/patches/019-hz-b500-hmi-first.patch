@@ -1,0 +1,56 @@
+--- a/rcS.c
++++ b/rcS.c
+@@ -34,6 +34,7 @@
+ 
+ static struct runqueue q, r;
+ static unsigned int rc_boot_init = 0;
++static struct runqueue_task *hmi_first_task;
+ #define RC_TASK_NAME_SIZE	64
+ struct rc_task{
+ 	char file_name[RC_TASK_NAME_SIZE];
+@@ -189,6 +190,16 @@
+ 		strncpy(name, ptr, RC_TASK_NAME_SIZE);
+ 		rc_task_list[rc_boot_init].task = &s->proc.task;
+ 		find_rc_boot_depend_task(file, &s->proc.task);
++		if (hmi_first_task) {
++			unsigned int count = s->proc.task.depend_task_num;
++			struct runqueue_task **dependencies = realloc(s->proc.task.depend_task,
++				(count + 1) * sizeof(*dependencies));
++			if (dependencies) {
++				s->proc.task.depend_task = dependencies;
++				dependencies[count] = hmi_first_task;
++				s->proc.task.depend_task_num++;
++			}
++		}
+ 	}
+ 	s->proc.task.type = &initd_type;
+ 	s->proc.task.complete = q_initd_complete;
+@@ -219,11 +230,27 @@
+ 	}
+ 
+ 	if(!rc_boot_init && !strcmp(param, "boot")) {
+-		rc_task_list = (struct rc_task *)malloc(gl.gl_pathc*sizeof(struct rc_task));
++		/* HZ-B500 SD opts in through its UI package. Numeric START order alone
++		 * is insufficient: this vendor queue runs ten scripts concurrently. */
++		int first = -1;
++		if (!access("/etc/procd/hmi-first", F_OK)) {
++			for (j = 0; j < gl.gl_pathc; j++) {
++				const char *name = strrchr(gl.gl_pathv[j], '/');
++				if (name && !strcmp(name + 1, "S09hz-ui")) { first = j; break; }
++			}
++		}
++		rc_task_list = calloc(gl.gl_pathc, sizeof(struct rc_task));
++		if (!rc_task_list) first = -1;
++		if (first >= 0) {
++			add_initd(q, gl.gl_pathv[first], param);
++			hmi_first_task = rc_task_list[rc_boot_init++].task;
++		}
+ 		for (j = 0; j < gl.gl_pathc; j++){
++			if (j == first) continue;
+ 			add_initd(q, gl.gl_pathv[j], param);
+ 			rc_boot_init++;
+ 		}
++		hmi_first_task = NULL;
+ 		free(rc_task_list);
+ 		rc_task_list = NULL;
+ 	}else {

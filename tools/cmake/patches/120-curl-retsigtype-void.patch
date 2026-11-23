@@ -1,0 +1,9 @@
+--- a/Utilities/cmcurl/CMakeLists.txt
++++ b/Utilities/cmcurl/CMakeLists.txt
+@@ -1009,5 +1009,1 @@
+-if(RETSIGTYPE_TEST)
+-  set(RETSIGTYPE void)
+-else(RETSIGTYPE_TEST)
+-  set(RETSIGTYPE int)
+-endif(RETSIGTYPE_TEST)
++set(RETSIGTYPE void)

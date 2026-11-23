@@ -1,0 +1,10 @@
+#!/bin/sh /etc/rc.common
+# cfg80211 is built in and tries regulatory.db before the rootfs is mounted;
+# that failure sticks until an explicit reload. Reload it once the rootfs is
+# up, then set the country from CONFIG_WIRELESS_REGDB_COUNTRY.
+START=19
+
+boot() {
+	iw reg reload || echo "regdb: reload failed" >&2
+	iw reg set @WIFI_COUNTRY@ || echo "regdb: setting country @WIFI_COUNTRY@ failed" >&2
+}

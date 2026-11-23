@@ -1,0 +1,22 @@
+Allwinner BSP internal codec machine driver (sun20iw1)
+
+Required properties:
+- compatible: "allwinner,sunxi-codec-machine"
+- sunxi,audio-codec: phandle to the internal codec
+- sunxi,cpudai-controller: phandle to the codec CPU DAI
+
+Optional board routing properties:
+- jack_enable: <0> disables headset jack detection; <1> enables it.
+- allwinner,fixed-headphone-output: boolean. The board permanently connects
+  both HPOUTL and HPOUTR to a downstream analog device. Enable these pins and
+  the Headphone DAPM endpoint when the card is initialized, without creating
+  a headset jack. Set jack_enable = <0> when using this property. The DAC and
+  headphone amplifier still follow normal PCM/DAPM power management. This
+  property does not control the downstream device or enable a speaker GPIO.
+
+Example:
+  &sndcodec {
+      jack_enable = <0>;
+      allwinner,fixed-headphone-output;
+      status = "okay";
+  };

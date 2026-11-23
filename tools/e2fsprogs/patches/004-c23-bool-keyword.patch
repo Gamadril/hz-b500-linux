@@ -1,0 +1,20 @@
+--- a/lib/ext2fs/tdb.c
++++ b/lib/ext2fs/tdb.c
+@@ -107 +107 @@
+-typedef int bool;
++typedef int tdb_bool;
+@@ -248 +248 @@
+-	bool have_transaction_lock;
++	tdb_bool have_transaction_lock;
+@@ -407 +407 @@
+-	bool mark_lock = ((ltype & TDB_MARK_LOCK) == TDB_MARK_LOCK);
++	tdb_bool mark_lock = ((ltype & TDB_MARK_LOCK) == TDB_MARK_LOCK);
+@@ -502 +502 @@
+-	bool mark_lock = ((ltype & TDB_MARK_LOCK) == TDB_MARK_LOCK);
++	tdb_bool mark_lock = ((ltype & TDB_MARK_LOCK) == TDB_MARK_LOCK);
+@@ -621 +621 @@
+-	bool mark_lock = ((ltype & TDB_MARK_LOCK) == TDB_MARK_LOCK);
++	tdb_bool mark_lock = ((ltype & TDB_MARK_LOCK) == TDB_MARK_LOCK);
+@@ -664 +664 @@
+-	bool mark_lock = ((ltype & TDB_MARK_LOCK) == TDB_MARK_LOCK);
++	tdb_bool mark_lock = ((ltype & TDB_MARK_LOCK) == TDB_MARK_LOCK);

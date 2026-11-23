@@ -1,0 +1,19 @@
+--- a/i_video_fbdev.c
++++ b/i_video_fbdev.c
+@@ -147,6 +147,7 @@
+         pix = r << fb.red.offset;
+         pix |= g << fb.green.offset;
+         pix |= b << fb.blue.offset;
++        pix |= ((1u << fb.transp.length) - 1) << fb.transp.offset; /* opaque on ARGB */
+ 
+         for (k = 0; k < fb_scaling; k++) {
+             for (j = 0; j < fb.bits_per_pixel/8; j++) {
+@@ -442,7 +443,7 @@
+     }
+ 
+     /* Start drawing from y-offset */
+-    lseek(fd_fb, y_offset * fb.xres, SEEK_SET);
++    lseek(fd_fb, y_offset * fb.xres + fb.yoffset * fb.xres * (fb.bits_per_pixel/8), SEEK_SET); /* honour pan */
+     write(fd_fb, I_VideoBuffer_FB, (SCREENHEIGHT * fb_scaling * (fb.bits_per_pixel/8)) * fb.xres); /* draw only portion used by doom + x-offsets */
+ }
+ 

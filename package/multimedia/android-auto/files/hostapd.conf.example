@@ -1,0 +1,21 @@
+# Manual bring-up alternative to netifd. Use the real interface and a channel
+# permitted by the device's regulatory domain. Install a private copy (0600).
+# Keep SSID/passphrase/channel in sync with android-auto-wireless.conf.
+interface=wlan0
+driver=nl80211
+ctrl_interface=/var/run/hostapd
+ssid=HZ-B500-AA
+# Country from the build option CONFIG_WIRELESS_REGDB_COUNTRY; hostapd sets the
+# regulatory domain from it (rules in /lib/firmware/regulatory.db). Without a
+# country, 5 GHz channels are passive and the AP does not start.
+country_code=@WIFI_COUNTRY@
+ieee80211d=1
+hw_mode=a
+channel=36
+ieee80211n=1
+wmm_enabled=1
+auth_algs=1
+wpa=2
+wpa_key_mgmt=WPA-PSK
+rsn_pairwise=CCMP
+wpa_passphrase=REPLACE-WITH-PRIVATE-PASSPHRASE

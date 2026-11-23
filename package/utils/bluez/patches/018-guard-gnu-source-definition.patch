@@ -1,0 +1,7 @@
+--- a/obexd/src/main.c
++++ b/obexd/src/main.c
+@@ -28,1 +28,3 @@
+-#define _GNU_SOURCE
++#ifndef _GNU_SOURCE
++#define _GNU_SOURCE
++#endif

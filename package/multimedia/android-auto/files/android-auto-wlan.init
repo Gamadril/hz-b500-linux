@@ -1,0 +1,18 @@
+#!/bin/sh /etc/rc.common
+# Pre-warm wlan0 for on-demand wireless Android Auto. The SSV driver needs
+# ~9 s after link-up before hostapd can create an AP; paying that at boot cuts
+# the Wireless AA tile to ~0.5 s. Link-up alone transmits nothing (no hostapd,
+# no wpa_supplicant), so no network is visible until the tile is used.
+START=95
+
+start() {
+	# Background: boot must not wait for the driver or a late wlan0.
+	(
+		tries=30
+		while [ ! -d /sys/class/net/wlan0 ] && [ "$tries" -gt 0 ]; do
+			sleep 1
+			tries=$((tries - 1))
+		done
+		ip link set wlan0 up
+	) >/dev/null 2>&1 </dev/null &
+}

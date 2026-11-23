@@ -1,0 +1,18 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -88,2 +88,2 @@
+-      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <unistd.h>
+-        $zeroth readlink(const char *path, $second *buf, $third bufsiz);]], [[puts("hello, world");]])],
++      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <unistd.h>
++        $zeroth readlink(const char *path, $second *buf, $third bufsiz);]], [[return 0;]])],
+@@ -116 +116 @@
+-  int setgroups($first size, const gid_t *list);]], [[puts("hello, world");]])],[setgroups_size_arg=$first],[])
++  int setgroups($first size, const gid_t *list);]], [[return 0;]])],[setgroups_size_arg=$first],[])
+--- a/configure
++++ b/configure
+@@ -12301 +12301 @@
+-puts("hello, world");
++return 0;
+@@ -12352 +12352 @@
+-puts("hello, world");
++return 0;

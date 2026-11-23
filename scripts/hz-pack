@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Build (if needed) and run tools/hz-pack, the TOC1 and Boot0 header packer.
+# The crate has no external dependencies, so the build is offline; build
+# output goes to out/host/hz-pack (HZ_PACK_TARGET_DIR overrides it).
+set -euo pipefail
+root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+target_dir=${HZ_PACK_TARGET_DIR:-$root/out/host/hz-pack}
+command -v cargo > /dev/null || { echo 'hz-pack: cargo (Rust >= 1.88) is required' >&2; exit 1; }
+# Tina's build environment may export cross-compilation settings; build for the host.
+env -u CARGO_BUILD_TARGET -u RUSTFLAGS -u CC -u CFLAGS -u LDFLAGS \
+    cargo build --quiet --release --offline --locked \
+    --manifest-path "$root/tools/hz-pack/Cargo.toml" --target-dir "$target_dir"
+exec "$target_dir/release/hz-pack" "$@"

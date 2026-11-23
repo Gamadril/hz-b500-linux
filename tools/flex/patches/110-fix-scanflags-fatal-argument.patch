@@ -1,0 +1,7 @@
+--- a/scanflags.c
++++ b/scanflags.c
+@@ -63,2 +63,2 @@ sf_init (void)
+-        lerrsf_fatal(_("Unable to allocate %ld of stack"),
+-            (long)sizeof(scanflags_t));
++        lerrsf_fatal(_("Unable to allocate %s stack"),
++            _("scan flags"));

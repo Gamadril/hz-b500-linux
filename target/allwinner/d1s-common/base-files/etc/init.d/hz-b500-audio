@@ -1,0 +1,14 @@
+#!/bin/sh /etc/rc.common
+# Configure the verified F133 output; do not replay unrelated MCU settings.
+START=50
+STOP=10
+
+start() {
+	[ -e /sys/firmware/devicetree/base/soc@3000000/sound@2030340/allwinner,fixed-headphone-output ] || return 0
+	/usr/bin/hz-b500-audio start
+}
+
+stop() {
+	[ -e /sys/firmware/devicetree/base/soc@3000000/sound@2030340/allwinner,fixed-headphone-output ] || return 0
+	/usr/bin/hz-b500-audio stop
+}

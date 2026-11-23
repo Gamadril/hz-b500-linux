@@ -1,0 +1,109 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006-2011 OpenWrt.org
+
+START=10
+STOP=98
+
+uci_apply_defaults() {
+	. /lib/functions/system.sh
+
+	cd /etc/uci-defaults || return 0
+	files="$(ls)"
+	[ -z "$files" ] && return 0
+	mkdir -p /tmp/.uci
+	for file in $files; do
+		( . "./$(basename $file)" ) && rm -f "$file"
+	done
+	uci commit
+}
+
+link_by_name()
+{
+	local parts
+
+	[ -d /dev/by-name -o -h /dev/by-name/rootfs ] || {
+		mkdir -p -m 755 /dev/by-name
+		parts="$(grep -o 'partitions=[^ ]*' /proc/cmdline)"
+		parts=${parts##*=}
+		part=" "
+
+		if [ -n "${parts}" ]; then
+			while [ "$part" != "$parts" ]
+			do
+					part=${parts%%:*}
+					ln -s "/dev/${part#*@}" "/dev/by-name/${part%@*}"
+					parts=${parts#*:}
+			done
+		# partitions may not here, but we still get them for mtd-ubi platform.
+		elif which ubinfo >/dev/null && grep -q "ubi.mtd" /proc/cmdline; then
+			for dev in $(find /dev -name "ubi[0-9]*_[0-9]*")
+			do
+				target="$(ubinfo ${dev} | awk '/^Name:/{print $2}')"
+				[ -z "${target}" ] && continue
+				ln -s "${dev}" "/dev/by-name/${target}"
+			done
+		fi
+	}
+}
+
+mount_single_app()
+{
+	/usr/sbin/fsck.ext4 -y /dev/by-name/app &>/dev/null
+	/bin/mount /dev/by-name/app /mnt/app
+}
+
+mount_app()
+{
+	[ -L /dev/by-name/app ] || return
+
+	mount_single_app
+}
+
+
+boot() {
+	[ -f /proc/mounts ] || /sbin/mount_root
+	[ -f /proc/jffs2_bbc ] && echo "S" > /proc/jffs2_bbc
+	[ -f /proc/net/vlan/config ] && vconfig set_name_type DEV_PLUS_VID_NO_PAD
+
+	mkdir -p /var/run
+	mkdir -p /var/log
+	mkdir -p /var/lock
+	mkdir -p /var/state
+	mkdir -p /var/tmp
+	mkdir -p /tmp/.uci
+	chmod 0700 /tmp/.uci
+	touch /var/log/wtmp
+	touch /var/log/lastlog
+	touch /tmp/resolv.conf.auto
+	ln -sf /tmp/resolv.conf.auto /tmp/resolv.conf
+	grep -q debugfs /proc/filesystems && /bin/mount -o noatime -t debugfs debugfs /sys/kernel/debug
+	[ "$FAILSAFE" = "true" ] && touch /tmp/.failsafe
+
+	link_by_name
+
+	/sbin/kmodloader
+	echo "kmodloader done" > /dev/console
+
+	# allow wifi modules time to settle
+	#sleep 1
+
+	/sbin/wifi detect > /tmp/wireless.tmp
+	[ -s /tmp/wireless.tmp ] && {
+		cat /tmp/wireless.tmp >> /etc/config/wireless
+	}
+	rm -f /tmp/wireless.tmp
+
+	/bin/board_detect
+	uci_apply_defaults
+
+	# temporary hack until configd exists
+	/sbin/reload_config
+
+	# create /dev/root if it doesn't exist
+	[ -e /dev/root -o -h /dev/root ] || {
+		rootdev=$(awk 'BEGIN { RS=" "; FS="="; } $1 == "root" { print $2 }' < /proc/cmdline)
+		[ -n "$rootdev" ] && ln -s "$rootdev" /dev/root
+	}
+
+	mount_app
+}

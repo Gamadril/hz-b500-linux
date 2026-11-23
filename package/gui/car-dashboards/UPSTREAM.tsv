@@ -1,0 +1,5 @@
+component	source_url	base_revision	declared_code_license
+dashboard	https://github.com/zhangwei43721/LVGL-CarDashboard	ae46e17cb7549f272b43e03e635c4a3bc45a49ff	MIT
+hmi	https://github.com/moli721/RK3568-LVGL-CarDashboard	92a2741d89664f576ca7cbea378084145480a5c5	MIT
+LVGL (trimmed)	https://github.com/lvgl/lvgl	8.3.11 as supplied by each dashboard	MIT; embedded fonts and unused optional libraries removed
+lv_drivers (bundled)	https://github.com/lvgl/lv_drivers	as supplied by each dashboard	MIT

@@ -1,0 +1,16 @@
+diff --git a/device/config/chips/d1s/configs/hz-b500_ddr/linux/config-5.4 b/device/config/chips/d1s/configs/hz-b500_ddr/linux/config-5.4
+--- a/device/config/chips/d1s/configs/hz-b500_ddr/linux/config-5.4
++++ b/device/config/chips/d1s/configs/hz-b500_ddr/linux/config-5.4
+@@ -2160,3 +2160,3 @@
+ # CONFIG_DISP2_SUNXI_DEBUG=y
+-# CONFIG_DISP2_SUNXI_COMPOSER is not set
++CONFIG_DISP2_SUNXI_COMPOSER=y
+ # CONFIG_DISP2_LCD_ESD_DETECT is not set
+diff --git a/device/config/chips/d1s/configs/hz-b500_sd/linux/config-5.4 b/device/config/chips/d1s/configs/hz-b500_sd/linux/config-5.4
+--- a/device/config/chips/d1s/configs/hz-b500_sd/linux/config-5.4
++++ b/device/config/chips/d1s/configs/hz-b500_sd/linux/config-5.4
+@@ -2160,3 +2160,3 @@
+ CONFIG_DISP2_SUNXI_DEBUG=y
+-# CONFIG_DISP2_SUNXI_COMPOSER is not set
++CONFIG_DISP2_SUNXI_COMPOSER=y
+ # CONFIG_DISP2_LCD_ESD_DETECT is not set

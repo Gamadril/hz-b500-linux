@@ -1,0 +1,68 @@
+#!/bin/sh
+# On-demand wireless Android Auto (HMI tile): bring up a private WPA2 AP on
+# wlan0, run the receiver with the given arguments (the HMI passes --once),
+# then always take the AP down again (wlan0 itself stays up, see android-auto-wlan).
+set -u
+# ANDROID_AUTO_ROOT (unset on the device) lets the host test use a temp tree.
+R=${ANDROID_AUTO_ROOT:-}
+HOSTAPD_CONF=$R/etc/android-auto-hostapd.conf
+AA_CONF=$R/etc/android-auto-wireless.conf
+IF=wlan0
+IP=192.168.43.1
+RUN=$R/var/run/android-auto
+NET=$R/sys/class/net/$IF
+umask 077
+[ -d "$NET" ] || { echo "android-auto-wireless: no $IF interface" >&2; exit 2; }
+# First use: the shipped example with a random passphrase. Edit this file to
+# change SSID, channel or passphrase; the receiver config follows it.
+if [ ! -s "$HOSTAPD_CONF" ]; then
+    psk=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 16)
+    sed "s/^wpa_passphrase=.*/wpa_passphrase=$psk/" "$R/usr/share/android-auto/hostapd.conf.example" >"$HOSTAPD_CONF" || exit 1
+fi
+value() { sed -n "s/^$1=//p" "$HOSTAPD_CONF" | tail -n 1; }
+# Rewritten every start so SSID/PSK/channel/BSSID always match the running AP.
+cat >"$AA_CONF" <<EOF
+bt_socket=/var/run/ab5301b.sock.bt
+hostapd_control=/var/run/hostapd/$IF
+interface=$IF
+ip=$IP
+port=6730
+ssid=$(value ssid)
+psk=$(value wpa_passphrase)
+mac=$(cat "$NET/address")
+channel=$(value channel)
+EOF
+mkdir -p "$RUN"
+stop() {
+    for pid in "$RUN/dnsmasq.pid" "$RUN/hostapd.pid"; do
+        [ -s "$pid" ] && kill "$(cat "$pid")" 2>/dev/null
+        rm -f "$pid"
+    done
+    # wlan0 stays up (pre-warmed at boot by android-auto-wlan): taking it
+    # down would cost the next start ~9 s of driver warm-up. No AP remains.
+    ip addr flush dev $IF 2>/dev/null
+}
+trap stop EXIT
+trap 'exit 1' INT TERM
+stop
+ip link set $IF up && ip addr add $IP/24 dev $IF || exit 1
+# Right after boot the SSV driver needs ~9 s after link-up (android-auto-wlan)
+# before an AP can be created; retry instead of failing the tap.
+tries=15
+until hostapd -B -P "$RUN/hostapd.pid" "$HOSTAPD_CONF"; do
+    tries=$((tries - 1))
+    [ "$tries" -gt 0 ] || exit 1
+    sleep 1
+done
+# DHCP only (no DNS, no gateway) for the phone, bound to wlan0 alone so the
+# boot dnsmasq is untouched.
+dnsmasq --conf-file=/dev/null --port=0 --interface=$IF --bind-interfaces \
+    --dhcp-range=192.168.43.100,192.168.43.119,12h --dhcp-option=3 --dhcp-option=6 \
+    --dhcp-leasefile="$RUN/leases" --pid-file="$RUN/dnsmasq.pid" || exit 1
+cedar-headunit --transport wireless --wireless-config "$AA_CONF" "$@"
+status=$?
+# While Bluetooth stays connected the phone re-opens its AA setup channel every
+# ~12 s and shows "Starting Android Auto" forever; drop its link (it may
+# reconnect for music/calls by itself).
+ab5301b bt disconnect >/dev/null 2>&1
+exit $status

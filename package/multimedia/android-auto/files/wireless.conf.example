@@ -1,0 +1,13 @@
+# Copy to /etc/android-auto-wireless.conf and chmod 600 before editing.
+# These must match the running netifd/hostapd WPA2 AP, not a desired future AP.
+# Replace MAC/credentials/channel with the real AP values. No network is created
+# by cedar-headunit. The example IP is illustrative, not a stock default.
+bt_socket=/var/run/ab5301b.sock.bt
+hostapd_control=/var/run/hostapd/wlan0
+interface=wlan0
+ip=192.168.43.1
+port=6730
+ssid=HZ-B500-AA
+psk=REPLACE-WITH-PRIVATE-PASSPHRASE
+mac=02:00:00:00:00:01
+channel=36

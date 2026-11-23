@@ -1,0 +1,40 @@
+#!/bin/sh
+# F133 HPOUTL/R -> AB5301B AUXL3/R3. Companion routing is separate.
+set -eu
+
+mixer() {
+	amixer -q -c audiocodec cset "name=$1" "$2"
+}
+
+case "${1:-start}" in
+	start)
+		mixer 'Headphone Switch' off
+		mixer 'HpSpeaker Switch' off
+		mixer 'LINEOUT Switch' off
+		# Tested board levels: DAC 159 is 0 dB; digital 63 writes raw 0.
+		mixer 'DAC volume' 159,159
+		mixer 'digital volume' 63
+		# Inverted ALSA control: 6 writes raw 1 (-6 dB headphone gain).
+		mixer 'Headphone volume' 6
+		mixer 'Headphone Switch' on
+		;;
+	stop)
+		if command -v ab5301b >/dev/null 2>&1; then
+			ab5301b mute on >/dev/null 2>&1 || :
+		fi
+		mixer 'Headphone Switch' off
+		;;
+	status)
+		amixer -c audiocodec contents
+		if command -v ab5301b >/dev/null 2>&1; then
+			ab5301b status
+		fi
+		;;
+	speaker|mute|volume|source|probe|initialize|apply)
+		exec ab5301b "$@"
+		;;
+	*)
+		echo "Usage: hz-b500-audio start|stop|status|speaker on/off|mute on/off|volume 0..20|source NAME|probe|initialize|apply" >&2
+		exit 2
+		;;
+esac

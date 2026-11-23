@@ -1,0 +1,14 @@
+--- a/libfakeroot.c
++++ b/libfakeroot.c
+@@ -1952,5 +1952 @@
+-# if defined(STAT64_SUPPORT) && !defined(__APPLE__)
+-    SEND_GET_STAT64(r->fts_statp, _STAT_VER);
+-# else
+     SEND_GET_STAT(r->fts_statp, _STAT_VER);
+-# endif
+@@ -1975,5 +1971 @@
+-# if defined(STAT64_SUPPORT) && !defined(__APPLE__)
+-      SEND_GET_STAT64(r->fts_statp, _STAT_VER);
+-# else
+       SEND_GET_STAT(r->fts_statp, _STAT_VER);
+-# endif

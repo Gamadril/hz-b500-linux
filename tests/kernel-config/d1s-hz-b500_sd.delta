@@ -1,0 +1,28 @@
+# Effective kernel config difference for d1s-hz-b500_sd: source -> built.
+# Source: device/config/chips/d1s/configs/hz-b500_sd/linux/config-5.4
+# Regenerate with: bash tests/kernel-config/check.sh --update d1s-hz-b500_sd
+CONFIG_AIO y -> n
+CONFIG_BLK_DEV_BSG y -> n
+CONFIG_COREDUMP n -> y
+CONFIG_DEBUG_INFO y -> n
+CONFIG_ELF_CORE n -> y
+CONFIG_EXT4_USE_FOR_EXT2 n -> y
+CONFIG_FHANDLE y -> n
+CONFIG_FS_IOMAP n -> y
+CONFIG_FS_MBCACHE n -> y
+CONFIG_IPV6_MROUTE n -> y
+CONFIG_IPV6_MULTIPLE_TABLES n -> y
+CONFIG_IPV6_SUBTREES n -> y
+CONFIG_IP_MROUTE_COMMON n -> y
+CONFIG_JBD2 n -> y
+CONFIG_KALLSYMS n -> y
+CONFIG_KALLSYMS_BASE_RELATIVE n -> y
+CONFIG_MAGIC_SYSRQ y -> n
+CONFIG_MAGIC_SYSRQ_DEFAULT_ENABLE 0x1 -> n
+CONFIG_MAGIC_SYSRQ_SERIAL y -> n
+CONFIG_PROC_PAGE_MONITOR y -> n
+CONFIG_PROFILING y -> n
+CONFIG_SWAP n -> y
+CONFIG_THERMAL_DEFAULT_GOV_STEP_WISE n -> y
+CONFIG_THERMAL_EMERGENCY_POWEROFF_DELAY_MS n -> 0
+CONFIG_THERMAL_GOV_STEP_WISE n -> y

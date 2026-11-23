@@ -1,0 +1,54 @@
+# Build output, local source archive cache and compiler distributions.
+/out/
+/tmp/
+/dl/*
+!/dl/README.md
+/prebuilt/*
+!/prebuilt/README.md
+# Local SDK selection, editor and agent state.
+/.config
+/.config.*
+/.buildconfig
+/.shell_setup
+/.repo/
+/.idea/
+/.vscode/
+/.agents/
+/.codex/
+/.claude/settings.local.json
+/.claude/worktrees/
+/.aws/
+/logs/
+/*.log
+/filelist
+/tags
+/cscope*
+# SDK host configuration programs; sources and *_shipped files stay tracked.
+/scripts/config/conf
+/scripts/config/mconf
+/scripts/config/*.o
+/scripts/config/zconf.hash.c
+/scripts/config/zconf.lex.c
+/scripts/config/zconf.tab.c
+# Regenerated boot payloads / staged firmware.
+/device/config/chips/d1s/bin/opensbi_sun20iw1p1.bin
+/device/config/chips/d1s/configs/hz-b500*/epos.img*
+# SSV's vendor tree does not supply ignore rules for in-tree Kbuild output.
+/lichee/linux-5.4/drivers/net/wireless/ssv6x5x/**/*.o
+/lichee/linux-5.4/drivers/net/wireless/ssv6x5x/**/*.a
+/lichee/linux-5.4/drivers/net/wireless/ssv6x5x/**/.*.cmd
+/lichee/linux-5.4/drivers/net/wireless/ssv6x5x/**/*.ko
+/lichee/linux-5.4/drivers/net/wireless/ssv6x5x/**/*.mod
+/lichee/linux-5.4/drivers/net/wireless/ssv6x5x/**/*.mod.c
+/lichee/linux-5.4/drivers/net/wireless/ssv6x5x/**/modules.order
+/lichee/linux-5.4/drivers/net/wireless/ssv6x5x/**/Module.symvers
+# Local agent notes and drafts; keep component/upstream documentation public.
+/docs/
+# User-supplied test media/artwork have no redistribution notice in this tree.
+/package/gui/car-dashboards/media/u_98o9hlkn7r-synthwave.mp3
+/package/gui/car-dashboards/media/big_buck_bunny_720p_h264.mov
+/device/config/chips/d1s/configs/hz-b500_sd/assets/linux_boot.jpg
+/core
+/core.[0-9]*
+# Rust build output of tools/hz-pack when built by hand (scripts/hz-pack uses out/).
+/tools/hz-pack/target/

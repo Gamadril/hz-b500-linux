@@ -1,0 +1,15 @@
+--- a/iw.h
++++ b/iw.h
+@@ -11,6 +11,12 @@
+ #include "nl80211.h"
+ #include "ieee80211.h"
+ 
++/* Older libnl-tiny lacks the signed 32-bit put helper. */
++#ifndef NLA_PUT_S32
++#define NLA_PUT_S32(msg, attrtype, value) \
++	NLA_PUT_TYPE(msg, int32_t, attrtype, value)
++#endif
++
+ #ifndef NL_CAPABILITY_VERSION_3_5_0
+ #define nla_nest_start(msg, attrtype) \
+        nla_nest_start(msg, NLA_F_NESTED | (attrtype))

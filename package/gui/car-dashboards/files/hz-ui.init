@@ -1,0 +1,43 @@
+#!/bin/sh /etc/rc.common
+USE_PROCD=1
+START=09
+STOP=05
+boot() {
+    start
+    local enabled attempts=0
+    config_get_bool enabled main enabled 1
+    [ "$enabled" = 1 ] || return 0
+    # procd's remaining boot tasks depend on completion of this task. A failed
+    # UI must still release normal startup after a bounded wait.
+    while [ ! -s /var/run/hz-ui.ready ] && [ "$attempts" -lt 120 ]; do
+        sleep 0.05
+        attempts=$((attempts + 1))
+    done
+}
+start_service() {
+    config_load hz-ui
+    local enabled framebuffer touch brightness dimmed_brightness
+    config_get_bool enabled main enabled 1
+    [ "$enabled" = 1 ] || return 0
+    # procd/ubus and devtmpfs are ready; S10boot has not made /var/run yet.
+    mkdir -p /var/run
+    config_get framebuffer main framebuffer /dev/fb0
+    config_get touch main touch_device auto
+    config_get brightness main brightness 128
+    config_get dimmed_brightness main dimmed_brightness 64
+    # Picture before the first frame; the HMI applies later changes itself.
+    local item value
+    for item in bright contrast hue saturation; do
+        config_get value main "lcd_$item" 50
+        echo "$value" > "/sys/class/disp/disp/attr/enhance_$item" 2>/dev/null
+    done
+    procd_open_instance
+    procd_set_param command /usr/libexec/hz-ui-start --framebuffer "$framebuffer" --touch-device "$touch" --brightness "$brightness" --dimmed-brightness "$dimmed_brightness"
+    # One malloc arena: per-thread arenas kept ~4.5 MB after each video player
+    # (single-core CPU, so sharing costs nothing).
+    procd_set_param env HZ_UI_BOOT_LOG=1 MALLOC_ARENA_MAX=1
+    procd_set_param respawn 3600 5 0
+    procd_set_param stderr 1
+    procd_set_param file /etc/config/hz-ui
+    procd_close_instance
+}

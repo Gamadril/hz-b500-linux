@@ -1,0 +1,37 @@
+choice
+	prompt "Bootloader interface"
+	default SWUPDATE_CONFIG_BOOTLOADER_NONE
+	help
+	  Choose the bootloader
+
+config SWUPDATE_CONFIG_BOOTLOADER_EBG
+	bool "EFI Boot Guard"
+	depends on SWUPDATE_CONFIG_HAVE_LIBEBGENV
+	depends on SWUPDATE_CONFIG_HAVE_ZLIB
+	help
+	  Support for EFI Boot Guard
+	  https://github.com/siemens/efibootguard
+
+comment "EFI Boot Guard needs libebgenv and libz"
+	depends on !SWUPDATE_CONFIG_HAVE_ZLIB || !SWUPDATE_CONFIG_HAVE_LIBEBGENV
+
+config SWUPDATE_CONFIG_BOOTLOADER_NONE
+	bool "Environment in RAM"
+	help
+	  This simulates the interface to a bootloader.
+	  Bootloader environment is just maitained in RAM
+	  and lost when SWUpdate exits.
+
+config SWUPDATE_CONFIG_BOOTLOADER_GRUB
+	bool "GRUB"
+	help
+	  Support for GRUB
+	  https://www.gnu.org/software/grub/
+endchoice
+
+config SWUPDATE_CONFIG_GRUBENV_PATH
+	string "GRUB Environment block file path"
+	depends on SWUPDATE_CONFIG_BOOTLOADER_GRUB
+	default SWUPDATE_DEFAULT_GRUBENV_PATH
+	help
+	  Provide path to GRUB environment block file
